@@ -817,12 +817,7 @@ def test(model, two_genes, validloader):
 
 def ea_process_first(model, trainloader, validloader, criterion, optimizer, scheduler, total_iter, train_iter, pop, save_path):
     history = [[], [], [], [], [], [], []]
-    gene_history = []
-    diversity_history = []
-    domination_history = []
-    winners_history = []
     st = time.time()
-    tt = 0
     for iteration in range(total_iter):
         model.train()
         two_gene_ids, two_genes = pop.get_two_gene()
@@ -850,7 +845,7 @@ def ea_process_first(model, trainloader, validloader, criterion, optimizer, sche
         logging.info('iter:{:4d}/{}\ttrain acc:{}'.format(iteration, total_iter,  two_accs[selected_id]))
         scheduler.step()
         winners = pop.get_winners()
-        winners_history.append(winners)
+        
         gene_count = getcountpath(winners)
         gene_pool = trans_pop(winners)
         ent = cal_ent_pool(gene_pool)
@@ -860,7 +855,6 @@ def ea_process_first(model, trainloader, validloader, criterion, optimizer, sche
         history[3].append(winners)      # all winners at i_th iteration
         history[4].append(two_accs[selected_id])
         if (iteration + 1) % 10 == 0:
-            tt += time.time() - st
             total_acc = 0
             for gene in winners:
                 model.set_gene(gene)
@@ -871,14 +865,15 @@ def ea_process_first(model, trainloader, validloader, criterion, optimizer, sche
             count_acc = test_cifar10(model, validloader)
             history[-2].append(avg_acc)
             history[-1].append(count_acc)
-            st =time.time()
-    tt += time.time() - st
+            
+    tt = time.time() - st
     torch.save(history, os.path.join(save_path, 'history'))
     min_ent_idx = history[2][total_iter*4//5:].index(min(history[2][total_iter*4//5:]))
     min_ent_gene = history[1][total_iter*4//5:][min_ent_idx]
     finale_iter_gene = history[1][-1]
     logging.info("min_ent_idx:{}\tmin_ent_gene:\n{}\nfinale_iter_gene:\n{}".format(min_ent_idx+total_iter*4//5, min_ent_gene, finale_iter_gene))
     torch.save(min_ent_gene, os.path.join(save_path, 'min_ent_gene'))
+    logging.info("total gpu time(days):{}".format(tt/60/60/24))
     print('search over')
 
     return history
