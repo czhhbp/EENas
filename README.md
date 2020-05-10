@@ -5,21 +5,22 @@ We proposed an efficient evolution method of neural architecture search. Our met
 
 # Requirements
 Python 3.6 +
+
 Pytorch 1.0.1 +
 
 # Search and Evaluate
 To search,
-"""
+'''
 python search_train.py
-"""
+'''
 To evaluate,
 Change 'genome' of darts-codes/genotypes.py into the architecture found, then run:
-"""
+'''
 cd darts_codes && python train.py
-"""
+'''
 
 We use partial [Darts](https://github.com/quark0/darts) codes as our evaluation environment so as to ensure fair comparison.
 
 # Results
 WE found final architecture as shown below and provide the trained network weights 'best_weights.pt' on CIFAR-10.
-![cells](http://baidu.com/pic/doge.png)
+![cells](https://github.com/czhhbp/EENas/blob/master/cells.png)
